@@ -14,6 +14,6 @@
           description = "Just a simple template for a pyproject.nix";
         };
       };
-    }
+    };
 }
 
