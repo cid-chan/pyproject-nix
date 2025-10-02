@@ -3,7 +3,7 @@
 Nixify your project for non-nix-users!
 
 ```bash
-nix flake init github:cid-chan/pyproject-nix
+nix flake init github:cid-chan/simple-pyproject-nix
 ```
 
 or just copy-paste `template/flake.nix` from a fresh repository,

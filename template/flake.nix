@@ -1,6 +1,6 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs";
-  inputs.pyproject-nix.url = "github:cid-chan/pyproject-nix";
+  inputs.pyproject-nix.url = "github:cid-chan/simple-pyproject-nix";
   inputs.pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { pyproject-nix, ... }@inputs:

@@ -17,8 +17,8 @@ let
 
   pyproject = builtins.fromTOML (builtins.readFile toml);
 
-  pythonVersion = pyproject.tool.pyproject-nix.defaults.python;
-  module-remap = pyproject.tool.pyproject-nix.remap;
+  pythonVersion = pyproject.tool.simple-pyproject-nix.defaults.python;
+  module-remap = pyproject.tool.simple-pyproject-nix.remap;
 
   ifHasWith = default: path: source: func:
     let
@@ -66,15 +66,15 @@ let
   optionNames = ifHasWith [] "project.optional-dependencies" pyproject (builtins.attrNames);
 
   defaultDependencies = ifHasWith [] "project.dependencies" pyproject (i: i);
-  defaultOptionNames = ifHasWith optionNames "tool.pyproject-nix.defaults.extras" pyproject (i: i);
-  testOptionNames = ifHasWith optionNames "tool.pyproject-nix.test-extras" pyproject (i: i);
+  defaultOptionNames = ifHasWith optionNames "tool.simple-pyproject-nix.defaults.extras" pyproject (i: i);
+  testOptionNames = ifHasWith optionNames "tool.simple-pyproject-nix.test-extras" pyproject (i: i);
 
   pythonPackages = options: 
     combineDependencies ([(clean-dependencies defaultDependencies)] ++ (builtins.map (name: clean-dependencies pyproject.project.optional-dependencies.${name}) options));
 
   withPyPackages = names: ps: builtins.map (pkg: ps.${pkg}) names;
 
-  specific = each-system pyproject.tool.pyproject-nix.systems (system:
+  specific = each-system pyproject.tool.simple-pyproject-nix.systems (system:
     let 
       python = pkgs.${pythonVersion};
       pkgs = nixpkgs.legacyPackages.${system}; 
@@ -83,7 +83,7 @@ let
       ({
         devShells.default = 
           let
-            packagedPython = python.withPackages (withPyPackages ((pythonPackages optionNames) ++ (ifHasWith [] "tool.pyproject-nix.console-dependencies" pyproject (v: clean-dependencies v))));
+            packagedPython = python.withPackages (withPyPackages ((pythonPackages optionNames) ++ (ifHasWith [] "tool.simple-pyproject-nix.console-dependencies" pyproject (v: clean-dependencies v))));
             scripts = pkgs.symlinkJoin {
               name = pyproject.project.name;
               paths = (ifHasWith [] "project.scripts" pyproject (scripts: nixpkgs.lib.mapAttrsToList (k: v: pkgs.writeShellScriptBin k ''
@@ -114,7 +114,7 @@ let
             program = "${self.packages.${system}.default}/bin/${k}";
           }) value)
 
-          (ifHas "tool.pyproject-nix.defaults.script" pyproject (v: {
+          (ifHas "tool.simple-pyproject-nix.defaults.script" pyproject (v: {
             default = self.apps.${system}.${v};
           }))
         ]);
@@ -182,18 +182,18 @@ let
 
                           meta = combineFragments [
                             ({
-                              platforms = pyproject.tool.pyproject-nix.systems;
+                              platforms = pyproject.tool.simple-pyproject-nix.systems;
                               sourceProvenance = [ final.lib.sourceTypes.fromSource ];
                             })
                             (ifHas "project.description" pyproject (description: {inherit description;}))
                             (ifHas "project.url" pyproject (homepage: {inherit homepage;}))
-                            (ifHas "tool.pyproject-nix.license" pyproject (license: { license = final.lib.licenses.${license}; }))
-                            (ifHas "tool.pyproject-nix.defaults.script" pyproject (mainProgram: { inherit mainProgram; }))
+                            (ifHas "tool.simple-pyproject-nix.license" pyproject (license: { license = final.lib.licenses.${license}; }))
+                            (ifHas "tool.simple-pyproject-nix.defaults.script" pyproject (mainProgram: { inherit mainProgram; }))
                             (ifHas "project.authors" pyproject (maintainers: { inherit maintainers; }))
                           ];
                         })
 
-                        (ifHas "tool.pyproject-nix.disabledTests" pyproject (tests: { disabledTests = tests; }))
+                        (ifHas "tool.simple-pyproject-nix.disabledTests" pyproject (tests: { disabledTests = tests; }))
                       ]);
                   in
                   nixpkgs.lib.makeOverridable package (defaultDependencies // buildDefaultExtraList);
@@ -203,20 +203,20 @@ let
         };
     })
 
-    (ifHas "tool.pyproject-nix.modules" pyproject (value: combineFragments [
+    (ifHas "tool.simple-pyproject-nix.modules" pyproject (value: combineFragments [
       ({
         nixosModules = combineFragments [
           (nixpkgs.lib.mapAttrs (k: v: 
             import "${self.outPath}/${v}" { inherit self inputs; }
-          ) pyproject.tool.pyproject-nix.modules)
+          ) pyproject.tool.simple-pyproject-nix.modules)
 
-          (ifHas "tool.pyproject-nix.defaults.module" pyproject (value: {
+          (ifHas "tool.simple-pyproject-nix.defaults.module" pyproject (value: {
             default = self.nixosModules.${value};
           }))
         ];
       })
 
-      (ifHas "tool.pyproject-nix.defaults.module" pyproject (value: {
+      (ifHas "tool.simple-pyproject-nix.defaults.module" pyproject (value: {
         nixosModule = self.nixosModules.default;
       }))
     ]))

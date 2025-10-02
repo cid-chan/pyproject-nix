@@ -27,7 +27,7 @@ test = [
 script-a = "example:a"
 script-b = "example:b"
 
-[tool.pyproject-nix]
+[tool.simple-pyproject-nix]
 # Nix-systems that are supported
 systems = ["aarch64-linux", "x86_64-linux", "aarch64-darwin"]
 
@@ -38,7 +38,7 @@ test-extras = ["test"]
 # in this example "ipython" (for a nicer shell)
 console-dependencies = ["ipython"]
 
-[tool.pyproject-nix.defaults]
+[tool.simple-pyproject-nix.defaults]
 # Default python version used when directly accessing the flakes packages.
 # The overlay exposed by pyproject-nix will let you choose your python version.
 python = "python313"
@@ -54,11 +54,11 @@ extras = []
 
 # If the pythonPackages-name of the package != the one in project.dependencies
 # you can use this section to map packages from one to another
-[tool.pyproject-nix.remap]
+[tool.simple-pyproject-nix.remap]
 flit_core = ["flit-core"]
 
 # With this section you can define additional modules the flake exposes.
-[tool.pyproject-nix.modules]
+[tool.simple-pyproject-nix.modules]
 example = "nix/module.nix"
 
 [build-system]
