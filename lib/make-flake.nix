@@ -1,5 +1,6 @@
 nixpkgs:
-{ inputs, toml
+{ inputs
+, toml = "${inputs.self.outPath}/pyproject.toml";
 }:
 let
   inherit (inputs) self;
@@ -173,7 +174,7 @@ let
                           inherit (pyproject.project) name;
                           pversion = pyproject.project.version;
 
-                          src = "${self.outDir}";
+                          src = "${self.outPath}";
                           build-system = build-system;
                           dependencies = build-system ++ (extractDeps (pythonPackages extras));
 
@@ -206,7 +207,7 @@ let
       ({
         nixosModules = combineFragments [
           (nixpkgs.lib.mapAttrs (k: v: 
-            import "${self.outDir}/${v}" { inherit self inputs; }
+            import "${self.outPath}/${v}" { inherit self inputs; }
           ) pyproject.tool.pyproject-nix.modules)
 
           (ifHas "tool.pyproject-nix.defaults.module" pyproject (value: {
