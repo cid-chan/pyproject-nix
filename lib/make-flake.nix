@@ -1,6 +1,6 @@
 nixpkgs:
 { inputs
-, toml ? "${inputs.self.outputs.outPath}/pyproject.toml"
+, toml
 }:
 let
   inherit (inputs) self;

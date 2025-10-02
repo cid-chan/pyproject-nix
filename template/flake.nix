@@ -7,5 +7,6 @@
     # This project is managed via pyproject.toml
     pyproject-nix.lib.makeFlake {
       inherit inputs;
+      toml = ./pyproject.toml;
     };
 }
