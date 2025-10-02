@@ -1,0 +1,68 @@
+[project]
+name = "example"
+version = "0.0.1"
+description = "Proprietary project ai_interaction"
+authors = []
+license = { text = "Proprietary" }
+
+requires-python = ">=3.13"
+
+# List of python dependencies
+dependencies = [
+]
+
+[project.optional-dependencies]
+# List of optional dependencies
+#
+# If you use package.override { ... },
+# it automatically generates enableTest, etc. according to these
+# values.
+test = [
+  "pytest"
+]
+
+[project.scripts]
+# Scripts are automatically exposed as apps.
+# they are likewise automatically available in nix develop.
+script-a = "example:a"
+script-b = "example:b"
+
+[tool.pyproject-nix]
+# Nix-systems that are supported
+systems = ["aarch64-linux", "x86_64-linux", "aarch64-darwin"]
+
+# Extras required for testing
+test-extras = ["test"]
+
+# Additional dependencies used in "nix develop <your repo>",
+# in this example "ipython" (for a nicer shell)
+console-dependencies = ["ipython"]
+
+[tool.pyproject-nix.defaults]
+# Default python version used when directly accessing the flakes packages.
+# The overlay exposed by pyproject-nix will let you choose your python version.
+python = "python313"
+
+# If you just run nix run <your-repo>, this script is run.
+script = "script-a"
+
+# nixosModules.default = nixosModules.example (according to this.)
+module = "example"
+
+# These are extras that are enabled by default on the package.
+extras = []
+
+# If the pythonPackages-name of the package != the one in project.dependencies
+# you can use this section to map packages from one to another
+[tool.pyproject-nix.remap]
+flit_core = ["flit-core"]
+
+# With this section you can define additional modules the flake exposes.
+[tool.pyproject-nix.modules]
+example = "nix/module.nix"
+
+[build-system]
+requires = ["flit_core>=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+
