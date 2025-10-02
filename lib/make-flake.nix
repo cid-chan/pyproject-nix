@@ -1,5 +1,6 @@
 nixpkgs:
-{ inputs }:
+{ inputs, toml
+}:
 let
   inherit (inputs) self;
 
@@ -13,7 +14,7 @@ let
         builtins.foldl' (p: n: p // n) {} values
       ) allSystems;
 
-  pyproject = builtins.fromTOML (builtins.readFile "${self}/pyproject.toml");
+  pyproject = builtins.fromTOML (builtins.readFile toml);
 
   pythonVersion = pyproject.tool.pyproject-nix.defaults.python;
   module-remap = pyproject.tool.pyproject-nix.remap;
@@ -172,7 +173,7 @@ let
                           inherit (pyproject.project) name;
                           pversion = pyproject.project.version;
 
-                          src = "${self}";
+                          src = "${self.outDir}";
                           build-system = build-system;
                           dependencies = build-system ++ (extractDeps (pythonPackages extras));
 
@@ -205,7 +206,7 @@ let
       ({
         nixosModules = combineFragments [
           (nixpkgs.lib.mapAttrs (k: v: 
-            import "${self}/${v}" { inherit self inputs; }
+            import "${self.outDir}/${v}" { inherit self inputs; }
           ) pyproject.tool.pyproject-nix.modules)
 
           (ifHas "tool.pyproject-nix.defaults.module" pyproject (value: {
@@ -220,4 +221,4 @@ let
     ]))
   ];
 in
-  specific // unspecific;
+  specific // unspecific

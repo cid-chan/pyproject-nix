@@ -5,7 +5,7 @@
     { self, nixpkgs, ... }:
     {
       lib = {
-        buildFlake = imprt ./lib/make-flake.nix nixpkgs;
+        makeFlake = import ./lib/make-flake.nix nixpkgs;
       };
       templates = {
         default = self.templates.pyproject-nix;
